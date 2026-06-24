@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberGuard | Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v={{ range(1000,9999) | random }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div id="toast-container"></div>
+
+    <div class="login-page">
+        <div class="login-card glass">
+            <h1>⚔️ CyberSentinal</h1>
+            <p id="auth-subtitle">Secure Analytics Access — SDN DDoS Detection</p>
+
+            {% if error %}
+            <div class="error-msg">{{ error }}</div>
+            {% endif %}
+
+            {% if success %}
+            <div class="success-msg">{{ success }}</div>
+            {% endif %}
+
+            <div id="login-form">
+                <form action="{{ url_for('login') }}" method="POST">
+                    <div class="input-group">
+                        <label>Username</label>
+                        <input type="text" name="username" placeholder="Enter your username" required
+                            autocomplete="username">
+                    </div>
+                    <div class="input-group">
+                        <label>Password</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="login-pass" name="password" placeholder="Enter your password"
+                                required autocomplete="current-password">
+                            <span class="toggle-password" onclick="togglePassword('login-pass')">👁️</span>
+                        </div>
+                    </div>
+                    <div class="form-footer">
+                        <label class="remember-me">
+                            <input type="checkbox" name="remember"> Remember Me
+                        </label>
+                        <a href="#" style="color: var(--text-muted); text-decoration: none;">Forgot Password?</a>
+                    </div>
+                    <button type="submit" class="btn-login">Access Dashboard</button>
+                </form>
+                <p style="margin-top: 20px; font-size: 0.85rem; color: var(--text-muted);">
+                    New user? <a href="#" onclick="toggleAuth(true)"
+                        style="color: var(--primary); text-decoration: none; font-weight: 600;">Create an account</a>
+                </p>
+            </div>
+
+            <div id="signup-form" style="display: none;">
+                <form action="{{ url_for('signup') }}" method="POST" id="signup-form-el">
+                    <div class="input-group">
+                        <label>Username</label>
+                        <input type="text" name="username" placeholder="Choose a username" required
+                            autocomplete="username">
+                    </div>
+                    <div class="input-group">
+                        <label>Password</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="signup-pass" name="password" placeholder="Min 6 chars: letters, numbers & symbols"
+                                required autocomplete="new-password">
+                            <span class="toggle-password" onclick="togglePassword('signup-pass')">👁️</span>
+                        </div>
+                        <small style="color: var(--text-muted); font-size: 0.75rem; margin-top: 4px; display: block;">
+                            Must contain at least 6 characters with letters, numbers, and special characters (!@#$%^&* etc.)
+                        </small>
+                    </div>
+                    <div class="input-group">
+                        <label>Confirm Password</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="signup-confirm" name="confirm_password"
+                                placeholder="Repeat password" required autocomplete="new-password">
+                            <span class="toggle-password" onclick="togglePassword('signup-confirm')">👁️</span>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-login">Create Account</button>
+                </form>
+                <p style="margin-top: 20px; font-size: 0.85rem; color: var(--text-muted);">
+                    Already have an account? <a href="#" onclick="toggleAuth(false)"
+                        style="color: var(--primary); text-decoration: none; font-weight: 600;">Sign in</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = (type === 'success' ? '✅ ' : '❌ ') + message;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(20px)';
+                setTimeout(() => toast.remove(), 400);
+            }, 3000);
+        }
+
+        function togglePassword(id) {
+            const input = document.getElementById(id);
+            const icon = input.nextElementSibling;
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.textContent = '🔒';
+            } else {
+                input.type = 'password';
+                icon.textContent = '👁️';
+            }
+        }
+
+        function toggleAuth(showSignup) {
+            document.getElementById('login-form').style.display = showSignup ? 'none' : 'block';
+            document.getElementById('signup-form').style.display = showSignup ? 'block' : 'none';
+            document.getElementById('auth-subtitle').textContent = showSignup ?
+                'Join CyberGuard — SDN DDoS Detection' : 'Secure Analytics Access — SDN DDoS Detection';
+        }
+
+        document.getElementById('signup-form-el').onsubmit = function (e) {
+            const p1 = document.getElementById('signup-pass').value;
+            const p2 = document.getElementById('signup-confirm').value;
+            
+            if (p1 !== p2) {
+                e.preventDefault();
+                showToast('Passwords do not match!', 'error');
+                return false;
+            }
+            
+            if (p1.length < 6) {
+                e.preventDefault();
+                showToast('Password must be at least 6 characters long!', 'error');
+                return false;
+            }
+            
+            const hasLetter = /[a-zA-Z]/.test(p1);
+            const hasNumber = /[0-9]/.test(p1);
+            const hasSpecial = /[!@#$%^&*()_+\-=\[\]{}|;:,.<>?]/.test(p1);
+            
+            if (!hasLetter || !hasNumber || !hasSpecial) {
+                e.preventDefault();
+                showToast('Password must contain letters, numbers, and special characters!', 'error');
+                return false;
+            }
+        };
+    </script>
+</body>
+
+</html>
