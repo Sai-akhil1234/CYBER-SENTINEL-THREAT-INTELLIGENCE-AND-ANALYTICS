@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberGuard | Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v={{ range(1000,9999) | random }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="{{ url_for('static', filename='chart.min.js') }}"></script>
+</head>
+
+<body>
+    
+    {% if show_welcome %}
+    <div id="welcome-popup" class="popup-overlay" style="display: flex;">
+        <div class="popup-card glass">
+            <h2>🎉 Welcome to CyberGuard!</h2>
+            <p>Your account has been created successfully. You can now access all security analytics features.</p>
+            <button onclick="closeWelcomePopup()" class="btn-primary">Get Started</button>
+        </div>
+    </div>
+    {% endif %}
+    
+    <nav class="glass nav-bar">
+        <h2 class="logo-text">⚔️ CyberGuard AI</h2>
+        <div class="nav-right">
+            <span id="welcome_msg" class="nav-username"></span>
+            <a href="{{ url_for('logout') }}" class="btn-logout">Logout</a>
+        </div>
+    </nav>
+
+    <main class="dashboard-main">
+
+        <!-- ── Section 1: KPI Stats ───────────────────────────────── -->
+        <section class="section-title">📊 Dataset Overview</section>
+        <div class="stats-grid">
+            <div class="stat-card glass">
+                <h3>Total Records</h3>
+                <div class="value" id="total_records">--</div>
+            </div>
+            <div class="stat-card glass">
+                <h3>Malicious Traffic</h3>
+                <div class="value red" id="malicious_count">--</div>
+            </div>
+            <div class="stat-card glass">
+                <h3>Safe Traffic</h3>
+                <div class="value green" id="genuine_count">--</div>
+            </div>
+            <div class="stat-card glass">
+                <h3>Attack Detection Rate</h3>
+                <div class="value" id="detection_rate">--%</div>
+            </div>
+        </div>
+
+        <!-- ── Section 2: ML Model Performance ───────────────────── -->
+        <section class="section-title">🤖 ML Model Performance</section>
+        <div class="stats-grid">
+            <div class="stat-card glass">
+                <h3>Logistic Regression Accuracy</h3>
+                <div class="value green" id="lr_acc">--</div>
+                <p class="stat-sub">Best solver: lbfgs</p>
+            </div>
+            <div class="stat-card glass">
+                <h3>KNN Accuracy</h3>
+                <div class="value green" id="knn_acc">--</div>
+                <p class="stat-sub">n_neighbors = 5</p>
+            </div>
+            <div class="stat-card glass">
+                <h3>LR Precision (Malicious)</h3>
+                <div class="value" id="lr_precision">--</div>
+            </div>
+            <div class="stat-card glass">
+                <h3>KNN Precision (Malicious)</h3>
+                <div class="value" id="knn_precision">--</div>
+            </div>
+        </div>
+
+        <!-- ── Section 3: Pie Charts ─────────────────────────────── -->
+        <section class="section-title">🥧 Traffic Distribution</section>
+        <div class="charts-grid two-col">
+            <div class="chart-card glass">
+                <h2>Traffic Analysis (Before DDoS Removal)</h2>
+                <div class="chart-container">
+                    <canvas id="pieChartBefore"></canvas>
+                </div>
+            </div>
+            <div class="chart-card glass">
+                <h2>Traffic Distribution (After Filtering)</h2>
+                <div class="chart-container">
+                    <canvas id="pieChartAfter"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Section 4: Protocol Analysis ─────────────────────── -->
+        <section class="section-title">🔌 Protocol Analysis</section>
+        <div class="charts-grid one-col">
+            <div class="chart-card glass">
+                <h2>Number of Requests by Protocol (All vs Malicious)</h2>
+                <div class="chart-container" style="height: 320px;">
+                    <canvas id="barChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Section 5: Source IP Analysis ─────────────────────── -->
+        <section class="section-title">🌐 Source IP Address Analysis</section>
+        <div class="charts-grid two-col">
+            <div class="chart-card glass">
+                <h2>All Requests by Source IP (Top 10)</h2>
+                <div class="chart-container" style="height: 380px;">
+                    <canvas id="srcAllChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card glass">
+                <h2>Attack Requests by Source IP (Top 10)</h2>
+                <div class="chart-container" style="height: 380px;">
+                    <canvas id="srcAttackChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Section 6: Null Values ─────────────────────────────── -->
+        <section class="section-title">🔍 Feature Null Value Audit</section>
+        <div class="charts-grid one-col">
+            <div class="chart-card glass">
+                <h2>Null Values per Feature</h2>
+                <div class="chart-container" style="height: 300px;">
+                    <canvas id="nullChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Section 7: Data Summary Table ────────────────────── -->
+        <section class="section-title">📋 Dataset Statistical Summary (describe())</section>
+        <div class="table-wrapper glass">
+            <div class="table-scroll">
+                <table id="descTable">
+                    <thead id="descHead"></thead>
+                    <tbody id="descBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <footer style="text-align:center; padding: 20px; color: var(--text-muted); font-size: 0.8rem;">
+        CyberGuard AI &mdash; SDN DDoS Detection Analytics &copy; 2026
+    </footer>
+
+    <script src="{{ url_for('static', filename='dashboard.js') }}?v={{ range(1000,9999) | random }}"></script>
+</body>
+
+</html>
